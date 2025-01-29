@@ -26,6 +26,16 @@ class CalorieTracker {
         this._displayNewWorkout(workout)
     }
 
+    removeWorkout(id) {
+        this._workouts = this._workouts.filter(workout => workout.id !== id);
+        console.log(this._workouts);
+    }
+
+    removeMeal(id) {
+        this._meals = this._meals.filter(meal => meal.id !== id);
+        console.log(this._meals);
+    }
+
 
 //      ***** Private methods *****
 
@@ -120,7 +130,7 @@ class CalorieTracker {
         const workoutEle = document.createElement('div');
         workoutEle.classList.add('card','my-2');
         workoutEle.innerHTML =`
-        <div class="card-body">
+        <div class="card-body" data-id = ${workout.id}>
                 <div class="d-flex align-items-center justify-content-between">
                   <h4 class="mx-1">${workout.name}</h4>
                   <div
@@ -169,6 +179,10 @@ class App {
         document.getElementById("meal-form").addEventListener('submit', this._newMeal.bind(this));
         document.getElementById("workout-form").addEventListener('submit', this._newWorkout.bind(this));
 
+        document.getElementById("meal-items").addEventListener('click', this._removeItems.bind(this,'meal'));
+        document.getElementById("workout-items").addEventListener('click', this._removeItems.bind(this,'workout'));
+
+
     }
 //      ***** Private methods *****
     _newMeal(evt){
@@ -205,6 +219,24 @@ class App {
 
         name.value = "";
         calories.value = "";
+    }
+
+    _removeItems(type,evt) {
+        if(evt.target.classList.contains('delete') || evt.target.classList.contains('fa-solid')){
+            if (confirm("Are you sure you want to delete ?")){
+                const id = evt.target.closest('.card-body').getAttribute('data-id');
+
+                if (type === 'meal'){
+                    this._tracker.removeMeal(id);
+                }else if (type === 'workout') {
+                    this._tracker.removeWorkout(id);
+                }else{
+                    console.log("E")
+                }
+
+                evt.target.closest('.card').remove();
+            }
+        }
     }
 }
 
