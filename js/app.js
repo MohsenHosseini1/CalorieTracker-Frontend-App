@@ -192,8 +192,8 @@ class App {
     constructor() {
         this._tracker = new CalorieTracker()
 
-        document.getElementById("meal-form").addEventListener('submit', this._newMeal.bind(this));
-        document.getElementById("workout-form").addEventListener('submit', this._newWorkout.bind(this));
+        document.getElementById("meal-form").addEventListener('submit', this._newItems.bind(this,'meal'));
+        document.getElementById("workout-form").addEventListener('submit', this._newItems.bind(this,'workout'));
 
         document.getElementById("meal-items").addEventListener('click', this._removeItems.bind(this,'meal'));
         document.getElementById("workout-items").addEventListener('click', this._removeItems.bind(this,'workout'));
@@ -204,42 +204,29 @@ class App {
         document.getElementById('reset').addEventListener('click',this._reset.bind(this));
     }
 //      ***** Private methods *****
-    _newMeal(evt){
+    _newItems(type,evt){
         evt.preventDefault();
-        const name = document.getElementById("meal-name");
-        const calories = document.getElementById("meal-calories");
-
-    //    validation
-        if(name.value === "" || calories.value === ""){
-            alert("All input must be filled");
-            return 0 ;
-        }
-
-        const meal = new Meal(name.value, calories.value*1);
-        this._tracker.addMeal(meal);
-
-        name.value = "";
-        calories.value = "";
-    }
-
-    _newWorkout(evt){
-        evt.preventDefault();
-        const name = document.getElementById("workout-name");
-        const calories = document.getElementById("workout-calories");
-
+        const name = document.getElementById(`${type}-name`);
+        const calories = document.getElementById(`${type}-calories`);
         //    validation
         if(name.value === "" || calories.value === ""){
             alert("All input must be filled");
             return 0 ;
         }
+        if(type === "meal"){
+            const meal = new Meal(name.value, calories.value*1);
+            this._tracker.addMeal(meal);
+        }else if(type === "workout"){
+            const workout = new Workout(name.value, calories.value*1);
+            this._tracker.addWorkout(workout);
+        }else{
+            console.log("error");
+        }
 
-        const workout = new Workout(name.value, calories.value*1);
-        this._tracker.addWorkout(workout);
 
         name.value = "";
         calories.value = "";
     }
-
     _removeItems(type,evt) {
         if(evt.target.classList.contains('delete') || evt.target.classList.contains('fa-solid')){
             if (confirm("Are you sure you want to delete ?")){
