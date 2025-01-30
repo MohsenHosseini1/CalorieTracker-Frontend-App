@@ -36,6 +36,7 @@ class CalorieTracker {
             const workout = this._workouts[indexOfWorkout];
             this._totalCalories += workout.calories;
             storage.updateTotalCalories(this._totalCalories);
+            storage.removeWorkout(id);
             this._workouts.splice(indexOfWorkout, 1);
             this._renderStats()
         }
@@ -47,6 +48,7 @@ class CalorieTracker {
             const meal = this._meals[indexOfMeal];
             this._totalCalories -= meal.calories;
             storage.updateTotalCalories(this._totalCalories);
+            storage.removeMeal(id);
             this._meals.splice(indexOfMeal, 1);
             this._renderStats()
         }
@@ -57,6 +59,7 @@ class CalorieTracker {
         this._totalCalories = 0;
         this._workouts = [];
         storage.updateTotalCalories(this._totalCalories);
+        storage.clearAll()
         this._displayCalorieLimit()
     }
     setLimit(calorieLimit) {
@@ -248,6 +251,24 @@ class storage {
         meals.push(meal);
         localStorage.setItem('meals', JSON.stringify(meals));
     }
+    static removeMeal(id) {
+        const meals = storage.getMeals();
+        meals.forEach((meal,index) => {
+            if (meal.id === id) {
+                meals.splice(index, 1);
+            }
+        })
+        localStorage.setItem('meals', JSON.stringify(meals));
+    }
+    static removeWorkout(id) {
+        const workouts = storage.getWorkouts();
+        workouts.forEach((workout,index) => {
+            if (workout.id === id) {
+                workouts.splice(index, 1);
+            }
+        })
+        localStorage.setItem('workouts', JSON.stringify(workouts));
+    }
     static getWorkouts() {
         let workouts;
         if (localStorage.getItem('workouts') === null) {
@@ -261,6 +282,12 @@ class storage {
         const workouts = storage.getWorkouts();
         workouts.push(workout);
         localStorage.setItem('workouts', JSON.stringify(workouts));
+    }
+    static clearAll(){
+        const removeList = ['workouts','meals','totalCalories'];
+        for(const value of removeList){
+            localStorage.removeItem(value);
+        }
     }
 }
 
