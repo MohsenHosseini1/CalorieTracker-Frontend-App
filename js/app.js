@@ -27,13 +27,23 @@ class CalorieTracker {
     }
 
     removeWorkout(id) {
-        this._workouts = this._workouts.filter(workout => workout.id !== id);
-        console.log(this._workouts);
+        const indexOfWorkout = this._workouts.findIndex(workout => workout.id === id);
+        if (indexOfWorkout !== -1) {
+            const workout = this._workouts[indexOfWorkout];
+            this._totalCalories += workout.calories;
+            this._workouts.splice(indexOfWorkout, 1);
+            this._renderStats()
+        }
     }
 
     removeMeal(id) {
-        this._meals = this._meals.filter(meal => meal.id !== id);
-        console.log(this._meals);
+        const indexOfMeal = this._meals.findIndex(meal => meal.id === id);
+        if (indexOfMeal !== -1) {
+            const meal = this._meals[indexOfMeal];
+            this._totalCalories -= meal.calories;
+            this._meals.splice(indexOfMeal, 1);
+            this._renderStats()
+        }
     }
 
 
@@ -106,7 +116,7 @@ class CalorieTracker {
     _displayNewMeal(meal){
         const mealsEle = document.getElementById("meal-items");
         const mealEle = document.createElement('div');
-        mealsEle.classList.add('card','my-2');
+        mealEle.classList.add('card','my-2');
         mealEle.innerHTML =
             `
               <div class="card-body" data-id = "${meal.id}">
@@ -182,6 +192,8 @@ class App {
         document.getElementById("meal-items").addEventListener('click', this._removeItems.bind(this,'meal'));
         document.getElementById("workout-items").addEventListener('click', this._removeItems.bind(this,'workout'));
 
+        document.getElementById('filter-meals').addEventListener('input',this._filterItems.bind(this,"meal"));
+        document.getElementById('filter-workouts').addEventListener('input',this._filterItems.bind(this,"workout"));
 
     }
 //      ***** Private methods *****
@@ -237,6 +249,18 @@ class App {
                 evt.target.closest('.card').remove();
             }
         }
+    }
+
+    _filterItems(type,evt) {
+        const searchValue = (evt.target.value).toLowerCase();
+        document.querySelectorAll(`#${type}-items .card`).forEach((item) => {
+            const name = item.firstElementChild.firstElementChild.textContent.toLowerCase();
+            if (name.indexOf(searchValue) !== -1) {
+                item.style.display = 'block';
+            }else{
+                item.style.display = 'none';
+            }
+        })
     }
 }
 
